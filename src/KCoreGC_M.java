@@ -3,6 +3,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -23,7 +25,7 @@ import edu.cmu.graphchi.util.IdInt;
 import edu.cmu.graphchi.util.Toplist;
 
 /**
- * K-core decomposition algorithm
+ * K-core decomposition algorithm using GraphChi.
  *
  * Outputs: a file containing key-value pairs: vertexId, coreness
  *
@@ -33,11 +35,15 @@ import edu.cmu.graphchi.util.Toplist;
  * 3 - if the upper-bound is better than its current value, v updates its value with the upper-bound.
  * 4 - Steps 2 and 3 are repeated until no more value updates are occurring.
  *
- * KCoreDecomposer is inspired from the algorithm presented in the following paper:
+ * The implementation is described in:
  * 
- * A. Montresor, F. De Pellegrini, and D. Miorandi. Distributed k-core decomposition. 
- * Parallel and Distributed Systems, IEEE Trans., 24(2), 2013.
- *
+ * Wissam Khaouid, Marina Barsky, S. Venkatesh, Alex Thomo:
+ * K-Core Decomposition of Large Networks on a Single PC. PVLDB 9(1): 13-23 (2015) 
+ * 
+ * The algorithm is inspired by:
+ * 
+ * A. Montresor, F. De Pellegrini, and D. Miorandi: 
+ * Distributed k-core decomposition. Parallel and Distributed Systems, IEEE Trans., 24(2), 2013.
  *
  * @author Wissam Khaouid, wissamk@uvic.ca, Alex Thomo, thomo@uvic.ca
  */
@@ -172,13 +178,14 @@ public class KCoreGC_M implements GraphChiProgram<Integer, Integer> {
     public static void main(String[] args) throws Exception {
     	long startTime = System.currentTimeMillis();
     	
-        /** Run from command line (Example)
-         *	java -Xmx4g -cp "bin:lib/*" -Dnum_threads=4 KCoreGraphChi filename nbrOfShards filetype
-         */
     	//args = new String[] {"./graphchidata/simplegraph.txt", "1", "edgelist"};
     	
     	if(args.length != 3) {
-    		System.out.println("Usage: java -Xmx4g -cp \"bin:lib/*\" -Dnum_threads=4 KCoreGraphChi filename nbrOfShards filetype");
+    		System.err.println("Usage: java -Xmx4g -cp \"bin:lib/*\" -Dnum_threads=4 KCoreGC_M filename nbrOfShards filetype" +
+    							"\nExample: " +
+    							"java -Xmx4g -cp \"bin:lib/*\" -Dnum_threads=4 KCoreGC_M " +
+    							"./graphchidata/simplegraph.txt 1 edgelist");
+    		System.exit(1);
     	}
 
         String fileName = args[0];
@@ -228,10 +235,13 @@ public class KCoreGC_M implements GraphChiProgram<Integer, Integer> {
         TreeSet<IdInt> topToBottom = Toplist.topListInt(inputFilePath,
                 engine.numVertices(), engine.numVertices());
 
-        for(IdInt walker : topToBottom) {
-            float coreValue = walker.getValue();
-            bw.write(trans.backward(walker.getVertexId()) + ", " + String.valueOf((int)coreValue) + "\n");
-        }
+        
+        SortedMap<Integer,Integer> res = new TreeMap<Integer,Integer>();
+        for(IdInt walker : topToBottom)
+            res.put(trans.backward(walker.getVertexId()), (int)walker.getValue());
+        
+        for(Integer v : res.keySet()) 
+        	bw.write(v + ":" + res.get(v) + "\n");
         
         bw.close();
         /* End of outputting Core Values */ 
@@ -244,6 +254,5 @@ public class KCoreGC_M implements GraphChiProgram<Integer, Integer> {
         
         long estimatedTime = System.currentTimeMillis() - startTime;
         System.out.println("Time elapsed = " + estimatedTime/1000.0);
-        System.out.println("In the experiments we consider the user+system time produced by the Unix time command."); 
     }
 }

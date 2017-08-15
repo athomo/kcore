@@ -1,36 +1,53 @@
+import java.io.File;
+import java.io.PrintStream;
+
+import it.unimi.dsi.webgraph.ImmutableGraph;
+
 /**
  * K-core decomposition algorithm
  *
  * Outputs: array "int[] res" containing the core values for each vertex.  
+ * The cores are stored in the <basename>.cores file. 
+ * This is a text file where each line is of the form <vertex-id>:<core number>
  *
  * This is an implementation (with optimizations) of the algorithm given in: 
  * A. Montresor, F. De Pellegrini, and D. Miorandi. Distributed k-core decomposition. 
  * Parallel and Distributed Systems, IEEE Trans., 24(2), 2013.
  * 
- * The graph is stored using Webgraph (see P. Boldi and S. Vigna. The webgraph framework I: compression techniques. WWW’04.)
+ * The graph is stored using Webgraph 
+ * (see P. Boldi and S. Vigna. The webgraph framework I: compression techniques. WWW'04.)
  *
  * @author Alex Thomo, thomo@uvic.ca, 2015
  */
 
 public class KCoreWG_M {
-	Graph G;
+	ImmutableGraph G;
+	int n;
+	int E;
+	int md; //max degree
+	
 	int[] core;
 	boolean[] scheduled;
-	int n;
 	boolean printprogress = false; 
 	int iteration = 0;
 	boolean change = false;
 	
-	public KCoreWG_M(String edgesfilename, String storageType) throws Exception {
-		if (storageType.equals("webgraph"))
-			G = new GraphWebgraph(edgesfilename, "memory-mapped");
+	public KCoreWG_M(String basename) throws Exception {
+			G = ImmutableGraph.loadMapped(basename);
 		
-		n = G.size();
+		n = G.numNodes();
 		core = new int[n];
 		
+		md = 0;
 		scheduled = new boolean[n];
-		for(int v=0; v<n; v++) 
+		for(int v=0; v<n; v++) {
+			
+			int degree = G.outdegree(v);
+			if(degree > md)
+				md = degree;
+			
 			scheduled[v] = true;
+		}
 	}
 	
 	void update(int v) {
@@ -41,7 +58,7 @@ public class KCoreWG_M {
 		}
 		else {
 			int d_v = G.outdegree(v);
-			int[] N_v = G.getNeighbors(v);
+			int[] N_v = G.successorArray(v);
 			int localEstimate = computeUpperBound(v,d_v,N_v);
 			if(localEstimate < core[v]) {
 				core[v] = localEstimate;
@@ -103,23 +120,38 @@ public class KCoreWG_M {
 	
     
 	public static void main(String[] args) throws Exception {
+		
 		long startTime = System.currentTimeMillis();
 		
 		//args = new String[] {"simplegraph"};
 		
-		System.out.println("Starting " + args[0]);
-		KCoreWG_M kc4 = new KCoreWG_M(args[0], "webgraph");
-		kc4.KCoreCompute();
-		System.out.println("Number of iterations="+kc4.iteration);
+		if(args.length != 1) {
+			System.err.println("Usage: java KCoreWG_M basename");
+			System.exit(1);
+		}
 		
-		/*Uncomment if you want to print the core numbers for each vertex.
-		int[] res = kc4.KCoreCompute();
-		for(int i=0; i<res.length; i++)
-			System.out.print(i+":" + res[i] + " ");
-		*/
+		String basename = args[0];
 		
-		long estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println(args[0] + ": Time elapsed = " + estimatedTime/1000.0);
+		System.out.println("Starting " + basename);
+		KCoreWG_M kc = new KCoreWG_M(basename);
+		
+		//storing the core value for each node in a file.
+		PrintStream ps = new PrintStream(new File(basename+".cores"));
+		
+		int[] res = kc.KCoreCompute();
+		int kmax = -1;
+		double sum = 0;
+		int cnt = 0;
+		for(int i=0; i<res.length; i++) {
+			ps.println(i+":" + res[i] + " ");
+			if(res[i] > kmax) 
+				kmax = res[i];
+			sum += res[i];
+			if(res[i] > 0) cnt++;
+		}
+		System.out.println("|V|	|E|	dmax	kmax	kavg");
+		System.out.println(cnt + "\t" + (kc.E/2) + "\t" + kc.md + "\t" + kmax + "\t" + (sum/cnt) );
+		
+        System.out.println(args[0] + ": Time elapsed (sec) = " + (System.currentTimeMillis() - startTime)/1000.0);		
 	}
-    
 }
