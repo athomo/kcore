@@ -105,7 +105,7 @@ This section is for the case when your graph is given a text file of edges (know
 It is very easy to convert an edgelist file into WebGraph format. 
 I am making the folloiwng assumptions: 
 
-1. The graph is unlabeled and the vertices are given by consecutive numbers, 0,1,2,... (If there are some vertices "missing", e.g. you don't have a vertex 0 in your file, it's not a problem. WebGraph will create dummy vertices, e.g. 0, that does not have any neighbor.) 
+1. The graph is unlabeled and the vertices are given by consecutive numbers, 0,1,2,... <br> (If there are some vertices "missing", e.g. you don't have a vertex 0 in your file, it's not a problem. WebGraph will create dummy vertices, e.g. 0, that does not have any neighbor.) 
 
 2. The edgelist file is TAB separated (not comma separated). 
 
@@ -121,7 +121,7 @@ Run:
 
 __java -cp "lib/*" it.unimi.dsi.webgraph.BVGraph -1 -g ArcListASCIIGraph dummy basename &lt; edgelistsortedfile__
 
-(This will create basename.graph, basename.offsets, basename.properties.
+(This will create *basename.graph, basename.offsets, basename.properties*.
 The basename can be e.g. __simplegraph__)
 
 Running KCoreWG_BZ and KCoreWG_M
@@ -138,17 +138,17 @@ The result will be stored in a text file _basename.cores_. The lines of the file
 
 Running KCoreGC_M
 --
-Here the input needs to be an edgelist (not WebGraph format). GraphChi does not read WebGraph format. Execute:
+Here the input needs to be an edgelist (not WebGraph format). GraphChi does not read WebGraph format. To run, execute:
 
 __java -Xmx4g -cp "bin:lib/*" -Dnum_threads=4 KCoreGC_M filename nbrOfShards filetype__
 
 __Example:__ 
 java -Xmx4g -cp "bin:lib/*" -Dnum_threads=4 KCoreGC_M ./graphchidata/simplegraph.txt 1 edgelist
 
-Why are we running using a file from subdirectory "graphchidata"? This is because GraphChi produces a lot of internal files for the shards it creates and those files are created in the same directory that the input file is. In order to keep the main directory clean, we have copied the edgelist file in the "graphchidata" subdirectory.
+Why are we running using a file from subdirectory "graphchidata"? This is because GraphChi produces a lot of internal files for the shards it creates and those files are placed in the same directory that the input file is. In order to keep the main directory clean, we have copied the edgelist file in the "graphchidata" subdirectory.
 
 __Remark.__
-GraphChi introduces internally some extra vertices which are not part of the graph. So, be prepared to discard the one or more of the last vertices in the output cores file. The latter is located in the "graphchidata" subdirectory.
+GraphChi introduces internally some extra vertices which are not part of the graph. So, you might need to discard one (or more) of the last vertices in the output cores file. The latter is located in the *"graphchidata"* subdirectory.
 
 Contact
 --
