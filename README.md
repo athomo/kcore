@@ -46,10 +46,10 @@ GraphChi: Large-Scale Graph Computation on Just a PC. OSDI 2012: 31-46*
 Remarks
 --
 
-*KCoreWG_BZ* loads the graph in compressed form in main memory. Because of the superb compression that WebGraph provides, we can fit in the main memory of a moderate machine with 12 GB RAM a large graph, such as Twitter 2010, which has about 1.5 billion edges (for the dateset see http://law.di.unimi.it/webdata/twitter-2010/). 
+*KCoreWG_BZ* loads the graph in compressed form in main memory. Because of the superb compression that WebGraph provides, we can fit in the main memory of a moderate machine with 12 GB RAM a large graph, such as Twitter 2010, which has about 1.5 billion edges (http://law.di.unimi.it/webdata/twitter-2010/). 
 
 *KCoreWG_M* is a vertex-centric algorithm, and it does not load the graph in main memory. Instead it uses memory-mapped files. As such it can scale to much bigger graphs, e.g. Clueweb 2012, which has more than 42 billion edges
-(for the dateset see http://law.di.unimi.it/webdata/clueweb12/).
+(http://law.di.unimi.it/webdata/clueweb12/).
 
 
 
