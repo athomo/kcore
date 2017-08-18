@@ -1,4 +1,4 @@
-K-Core Decomposition for Very Large Graphs
+K-Core Decomposition of Very Large Graphs
 ===
 
 This repository contains efficient implementations for computing the k-core decomposition of large graphs. The details of the implementations and their optimizations are described in the following paper: 
@@ -60,7 +60,7 @@ The programs are already compiled with javac 1.8 (Java 8). If your java is older
 __javac -cp "lib/\*" -d bin src/*__
 
 
-Input
+Input for KCoreWG_BZ and KCoreWG_M
 --
 
 The graphs for *KCoreWG_BZ* and *KCoreWG_M* should be in WebGraph format.  
@@ -136,9 +136,60 @@ __java -cp "bin:lib/*" KCoreWG_M basename__
 
 The result will be stored in a text file _basename.cores_. The lines of the file are of the form _vertex-id:core-number_.
 
-Running KCoreGC_M
+
+Undirected graphs in WebGraph
 --
-Here the input needs to be an edgelist (not WebGraph format). GraphChi does not read WebGraph format. To run, execute:
+While our implementations can work with directed graphs by considering the *outdegree* of the vertices as their *degree*, the definition of k-core is often given for undirected graphs. 
+
+In order to obtain undirected graphs, for each edge we add its inverse. This can be achieved by taking the union of the graph with its *transpose*. Here we show how to do this for cnr-2000.
+
+Download from http://law.di.unimi.it/datasets.php:
+
+*cnr-2000.graph* <br>
+*cnr-2000.properties* <br>
+*cnr-2000-t.graph* <br>
+*cnr-2000-t.properties*
+
+(The last two files are for the transpose graph.)
+
+Build the offsets:
+
+__java -cp "lib/*" it.unimi.dsi.webgraph.BVGraph -o -O -L cnr-2000__ <br>
+__java -cp "lib/*" it.unimi.dsi.webgraph.BVGraph -o -O -L cnr-2000-t__
+
+Symmetrize by taking union:
+
+__java -cp "lib/*" it.unimi.dsi.webgraph.Transform union cnr-2000 cnr-2000-t cnr-2000-sym__
+  
+(The above produces the same result as
+
+__java -cp "lib/*" it.unimi.dsi.webgraph.Transform symmetrize cnr-2000 cnr-2000-sym__
+
+but is more efficient. So, use union whenever the transpose graph exists.)
+
+Remove selfloops, i.e. (v,v) edges:
+
+__java -cp "lib/*";"bin" SelfLoopRemover cnr-2000-sym cnr-2000-sym-noself__
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GraphChi: Running KCoreGC_M
+--
+For GraphChi the input needs to be an edgelist (not WebGraph format). GraphChi does not read WebGraph format. To run, execute:
 
 __java -Xmx4g -cp "bin:lib/*" -Dnum_threads=4 KCoreGC_M filename nbrOfShards filetype__
 
