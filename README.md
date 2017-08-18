@@ -124,15 +124,23 @@ __java -cp "lib/*" it.unimi.dsi.webgraph.BVGraph -1 -g ArcListASCIIGraph dummy b
 (This will create *basename.graph, basename.offsets, basename.properties*.
 The basename can be e.g. __simplegraph__)
 
+
+
 Running KCoreWG_BZ and KCoreWG_M
 --
 KCoreWG_BZ:
+
 __java -cp "bin:lib/*" KCoreWG_BZ basename__
+
+e.g. <br> java -cp "bin:lib/*" KCoreWG_BZ simplegraph
 
 (Change : to ; if you are on Windows)
 
 KCoreWG_M:
+
 __java -cp "bin:lib/*" KCoreWG_M basename__
+
+e.g. <br> java -cp "bin:lib/*" KCoreWG_M simplegraph
 
 The result will be stored in a text file _basename.cores_. The lines of the file are of the form _vertex-id:core-number_.
 
