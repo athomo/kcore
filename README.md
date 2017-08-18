@@ -168,12 +168,6 @@ __java -cp "lib/*" it.unimi.dsi.webgraph.BVGraph -o -O -L cnr-2000-t__
 Symmetrize by taking union:
 
 __java -cp "lib/*" it.unimi.dsi.webgraph.Transform union cnr-2000 cnr-2000-t cnr-2000-sym__
-  
-(The above produces the same result as
-
-__java -cp "lib/*" it.unimi.dsi.webgraph.Transform symmetrize cnr-2000 cnr-2000-sym__
-
-but is more efficient. So, use union whenever the transpose graph exists.)
 
 
 
