@@ -48,7 +48,7 @@ Remarks
 
 *KCoreWG_BZ* loads the graph in compressed form in main memory. Because of the superb compression that WebGraph provides, we can fit in the main memory of a moderate machine with 12 GB RAM a large graph, such as Twitter 2010, which has about 1.5 billion edges (http://law.di.unimi.it/webdata/twitter-2010/). 
 
-*KCoreWG_M* is a vertex-centric algorithm, and it does not load the graph in main memory. Instead it uses memory-mapped files. As such it can scale to much bigger graphs, e.g. Clueweb 2012, which has more than 42 billion edges
+*KCoreWG_M* is a vertex-centric algorithm, and it does not load the graph in main memory. Instead, it uses memory-mapped files. As such, it can scale to much bigger graphs, e.g. Clueweb 2012, which has more than 42 billion edges
 (http://law.di.unimi.it/webdata/clueweb12/).
 
 
@@ -66,7 +66,11 @@ Input
 The graphs for *KCoreWG_BZ* and *KCoreWG_M* should be in WebGraph format.  
 
 There are three files in this format: 
-*basename.graph*, *basename.properties*, and *basename.offsets*
+
+*basename.graph* <br>
+*basename.properties* <br>
+*basename.offsets*
+
 (see simplegraph example in the main directory)
 
 There many available datasets in this format in:
