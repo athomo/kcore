@@ -175,22 +175,6 @@ __java -cp "lib/*" it.unimi.dsi.webgraph.Transform symmetrize cnr-2000 cnr-2000-
 
 but is more efficient. So, use union whenever the transpose graph exists.)
 
-Remove selfloops, i.e. (v,v) edges:
-
-__java -cp "lib/*";"bin" SelfLoopRemover cnr-2000-sym cnr-2000-sym-noself__
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
